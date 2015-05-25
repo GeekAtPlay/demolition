@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.Arrays;
 
 @SpringBootApplication
-public class DemolitionApplication {
+public class Application {
 
 
     @Bean
@@ -25,6 +25,6 @@ public class DemolitionApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(DemolitionApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }
