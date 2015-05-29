@@ -37,7 +37,7 @@ class VehicleRestController {
     }
 
     @RequestMapping(value = "/{vehicleId}", method = RequestMethod.GET)
-    Vehicle readBookmark(@PathVariable String userId, @PathVariable Long vehicleId) {
+    Vehicle readVehicle(@PathVariable String userId, @PathVariable Long vehicleId) {
         this.validateUser(userId);
         return this.vehicleRepository.findOne(vehicleId);
     }
