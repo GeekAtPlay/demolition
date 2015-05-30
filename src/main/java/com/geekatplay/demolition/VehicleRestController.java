@@ -2,13 +2,15 @@ package com.geekatplay.demolition;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/{userId}/vehicles")
@@ -37,15 +39,19 @@ class VehicleRestController {
     }
 
     @RequestMapping(value = "/{vehicleId}", method = RequestMethod.GET)
-    Vehicle readVehicle(@PathVariable String userId, @PathVariable Long vehicleId) {
+    VehicleResource readVehicle(@PathVariable String userId, @PathVariable Long vehicleId) {
         this.validateUser(userId);
-        return this.vehicleRepository.findOne(vehicleId);
+        return new VehicleResource(this.vehicleRepository.findOne(vehicleId));
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    Collection<Vehicle> readVehicles(@PathVariable String userId) {
+    Resources<VehicleResource> readVehicles(@PathVariable String userId) {
         this.validateUser(userId);
-        return this.vehicleRepository.findByAccountUsername(userId);
+        List<VehicleResource> vehicleResourceList = this.vehicleRepository.findByAccountUsername(userId)
+                .stream()
+                .map(VehicleResource::new)
+                .collect(Collectors.toList());
+        return new Resources<>(vehicleResourceList);
     }
 
     @Autowired
