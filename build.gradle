@@ -30,15 +30,19 @@ repositories {
 
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    compile("org.springframework.boot:spring-boot-starter-mobile")
-    compile("org.springframework.boot:spring-boot-starter-security")
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-websocket")
-    compile("org.springframework.hateoas:spring-hateoas")
-    runtime("org.hsqldb:hsqldb")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile("com.jayway.jsonpath:json-path")
+    compile "org.springframework.boot:spring-boot-starter-data-jpa"
+    compile "org.springframework.boot:spring-boot-starter-mobile"
+    compile "org.springframework.boot:spring-boot-starter-security"
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-websocket"
+    compile "org.springframework.hateoas:spring-hateoas"
+    // for OAuth 2.0
+    compile "org.springframework.security.oauth:spring-security-oauth2:2.0.7.RELEASE"
+    // for OAuth 1.0a
+    compile "org.springframework.security.oauth:spring-security-oauth:2.0.7.RELEASE"
+    runtime "org.hsqldb:hsqldb"
+    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile "com.jayway.jsonpath:json-path"
 }
 
 
