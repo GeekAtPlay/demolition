@@ -2,13 +2,15 @@ package com.geekatplay.demolition;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,31 +23,36 @@ class VehicleRestController {
     private final AccountRepository accountRepository;
 
     @RequestMapping(method = RequestMethod.POST)
-    ResponseEntity<?> add(@PathVariable String userId, @RequestBody Vehicle vehicle) {
+    ResponseEntity<?> add(Principal principal, @RequestBody Vehicle input) {
+        String userId = principal.getName();
         this.validateUser(userId);
         return this.accountRepository
                 .findByUsername(userId)
                 .map(account -> {
-                    Vehicle updatedVehicle = vehicleRepository.save(new Vehicle(account,
-                            vehicle.uri, vehicle.description));
+                    Vehicle vehicle = vehicleRepository.save(new Vehicle(account,
+                            input.uri, input.description));
 
                     HttpHeaders httpHeaders = new HttpHeaders();
-                    httpHeaders.setLocation(ServletUriComponentsBuilder
-                            .fromCurrentRequest().path("/{id}")
-                            .buildAndExpand(updatedVehicle.getId()).toUri());
+
+                    Link forOneVehicle = new VehicleResource(vehicle).getLink("self");
+
+                    httpHeaders.setLocation(URI.create(forOneVehicle.getHref()));
+
                     return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
                 }).get();
 
     }
 
     @RequestMapping(value = "/{vehicleId}", method = RequestMethod.GET)
-    VehicleResource readVehicle(@PathVariable String userId, @PathVariable Long vehicleId) {
+    VehicleResource readVehicle(Principal principal, @PathVariable Long vehicleId) {
+        String userId = principal.getName();
         this.validateUser(userId);
         return new VehicleResource(this.vehicleRepository.findOne(vehicleId));
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    Resources<VehicleResource> readVehicles(@PathVariable String userId) {
+    Resources<VehicleResource> readVehicles(Principal principal) {
+        String userId = principal.getName();
         this.validateUser(userId);
         List<VehicleResource> vehicleResourceList = this.vehicleRepository.findByAccountUsername(userId)
                 .stream()
@@ -55,8 +62,7 @@ class VehicleRestController {
     }
 
     @Autowired
-    VehicleRestController(VehicleRepository vehicleRepository,
-                           AccountRepository accountRepository) {
+    VehicleRestController(VehicleRepository vehicleRepository, AccountRepository accountRepository) {
         this.vehicleRepository = vehicleRepository;
         this.accountRepository = accountRepository;
     }
